@@ -1,11 +1,17 @@
+#ifndef MYGRAPHIC_H
+#define MYGRAPHIC_H
+
+
 #include "tm_stm32f4_disco.h"
 #include "tm_stm32f4_fonts.h"
 #include "tm_stm32f4_ili9341.h"
+#include <stdio.h>
 
 //For testing
 char score[]="99999";
 char magenta[]="000x000";
 char black[]="000x000";
+
 /**
  * @brief  Possible tiles
  */
@@ -176,4 +182,18 @@ void DrawSquareOnTileBoard(uint16_t x, uint16_t y, uint32_t color){
 		DrawFilledSquare(13*x+71,307-y*13,12,color);
 }
 
+void ChangeScore(uint16_t s){
+	sprintf(score,"%u",s);
+}
 
+void yRefreshScore(){
+	TM_ILI9341_DrawFilledRectangle(5, 125, 70, 135, ILI9341_COLOR_BLUE);
+	TM_ILI9341_Puts(5,125,score,&TM_Font_7x10,ILI9341_COLOR_WHITE,ILI9341_COLOR_BLUE);
+}
+
+void xRefreshScore(){
+	TM_ILI9341_DrawFilledRectangle(5, 140, 70, 150, ILI9341_COLOR_BLUE);
+	TM_ILI9341_Puts(5,140,score,&TM_Font_7x10,ILI9341_COLOR_BLACK,ILI9341_COLOR_BLUE);
+}
+
+#endif

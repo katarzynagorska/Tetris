@@ -21,26 +21,39 @@
 #include "tm_stm32f4_delay.h"
 /*Include my headers*/
 #include "myGraphic.h"
+#include "myInit.h"
 
 
 #define SQUARE_SIZE 20
 #define X_SQUARE_BEGINNING (155-SQUARE_SIZE)
 #define Y_SQUARE_BEGINNING (160-SQUARE_SIZE)
 
-void DrawFilledSquare(uint16_t x, uint16_t y, uint16_t size, uint32_t color);
+//void Clock_HSE_Configuration(void);
+//void Clock_HSI_Configuration(void);
+//void my_Clock_PLL_Configuration(void);
 
-uint16_t  mode;
 
-int i,j,k,z;
+//void my_GPIO_Configuration(void);
+
+//void EXTI_Configuration(void);
+
+uint8_t  mode;
+uint8_t up,down,left,right,user;
+
+uint16_t x,y;
+uint8_t i,j,k;
+
 int main(void) {
 	
 	mode = 0;
 	j = 0;
 	k = 0;
-	z=0;
+	x=0,y=0;
 
 	/* Initialize system */
-	SystemInit();
+	//SystemInit();
+	my_Clock_PLL_Configuration();
+	my_GPIO_Configuration();
 
 	/* Initialize leds & init on board */
 	TM_DISCO_LedInit();
@@ -53,8 +66,63 @@ int main(void) {
 		TM_DISCO_LedToggle(LED_ALL);
 		ClearBoard();
 	
+		user = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_0); 
+		
+		down = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_2); 
+		up = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_4);
+		left = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_3);
+		right = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_5);
+		
+		if(down==0) 
+		{
+			if (y>0)
+			{
+				y-=1;
+				ChangeScore(y);
+				yRefreshScore();
+			}
+			else
+				y = 22;
+		}
+		if(up==0)
+		{
+			if(y<22)
+			{
+				y+=1;
+				ChangeScore(y);
+				yRefreshScore();
+			}
+			else 
+				y = 0;
+		}
+		if(left==0)
+		{
+			if(x>0)
+			{
+				x-=1;
+				ChangeScore(x);
+				xRefreshScore();
+			}
+			else
+				x = 22;
+		}
+		if(right==0)
+		{
+			if (x<9)
+			{
+				x+=1;
+				ChangeScore(x);
+				xRefreshScore();
+			}
+			else 
+				x = 0;
+		}
+					
+
+		
+		
 		/*Drawing stuff*/
-		switch (mode){
+	/*	switch (mode){
 			case 0:
 				DrawNextTile(TILE_I);
 				mode++;	
@@ -87,8 +155,14 @@ int main(void) {
 				break;
 		
 		}
+	*/
+	
+			if(left==1)
+				DrawSquareOnTileBoard(8,8,ILI9341_COLOR_ORANGE);
+		else
+				DrawSquareOnTileBoard(8,8,ILI9341_COLOR_GREEN);	
 		
-	ClearBoard();
+	DrawSquareOnTileBoard(x,y,ILI9341_COLOR_MAGENTA);
 	DrawSquareOnTileBoard(j,k,ILI9341_COLOR_BLACK);
 	DrawSquareOnTileBoard(9-j,22-k,ILI9341_COLOR_BLUE2);
 	if(j<9){ 
@@ -100,10 +174,8 @@ int main(void) {
 	}
 	if (k==22)
 		k = 0; 
-			
 		
-	Delayms(250);
-		
+	Delayms(500);
 		
 	}
 }
