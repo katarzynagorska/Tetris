@@ -1,35 +1,7 @@
-//void Clock_HSE_Configuration(void);
-//void Clock_HSI_Configuration(void);
-//void Clock_PLL_Configuration(void);
+#include "tm_stm32f4_delay.h"	
+#include "tm_stm32f4_disco.h"	
+#include "tm_stm32f4_rng.h"
 
-
-//void GPIO_Configuration(void);
-
-//void EXTI_Configuration(void);
-/*
-void Clock_HSI_Configuration(){
-	RCC_DeInit();
-	
-	RCC_HSICmd(ENABLE);
-	RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);
-	
-	while (RCC_GetFlagStatus(RCC_FLAG_HSIRDY) != SET);
-
-}
-
-	void Clock_HSE_Configuration(){
-	RCC_DeInit();
-	
-	RCC_HSEConfig(RCC_HSE_ON);
-	RCC_SYSCLKConfig(RCC_SYSCLKSource_HSE);
-	
-	while (RCC_WaitForHSEStartUp() != SUCCESS);
-	while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) != SET);
-	RCC_HSICmd(DISABLE);
-}	
-	*/
-	
-	
 void my_Clock_PLL_Configuration(){
 	RCC_DeInit();
 	
@@ -40,11 +12,15 @@ void my_Clock_PLL_Configuration(){
 	while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) != SET);
 	
 	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+	//TODO: verify
 	RCC_PLLConfig(RCC_PLLSource_HSE, 4, 200, 4, 4);
 	RCC_PLLCmd(ENABLE);
+	
 	RCC_HCLKConfig(RCC_SYSCLK_Div1);
+	
 	RCC_PCLK1Config(RCC_HCLK_Div2);
 	RCC_PCLK2Config(RCC_HCLK_Div1);
+	
 	while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET);
 }
 
@@ -235,53 +211,20 @@ void Configure_PE6(void){
 
 }
 
-/*
-void my_GPIO_Configuration()
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
 
+void Init(void){
+	/* Initialize system */
+	my_Clock_PLL_Configuration();
 	
-	// Input pins for custom switches
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
-	GPIO_InitStructure.GPIO_Speed = GPIO_High_Speed;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	/*Configure pins for interrupts*/
+	Configure_PE0();
+	Configure_PE2();
+	Configure_PE4();
+	Configure_PE6();
 	
-	GPIO_Init(GPIOE, &GPIO_InitStructure);	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-
+	/*Configure board and LCD*/
+	TM_DISCO_LedInit();
+	TM_DELAY_Init();
+	TM_RNG_Init();
+	BoardInit();
 }
-
-void EXTI_Configuration(void)
-{
-//inicjalizacja struktury konfiguracji przerwan EXTI
- EXTI_InitTypeDef EXTI_InitStructure;
-//aktywowanie funkcji EXTI pinów joystick’a
- GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource0);
- GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource2);
- GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource4);
- GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource6);
-
- EXTI_InitStructure.EXTI_Line = EXTI_Line0 | EXTI_Line2 | EXTI_Line4 | EXTI_Line6 ;
- EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-//przerwanie przy zboczu opadajacym
- EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising ;
-//uaktywnienie kontrolera EXTI
- EXTI_InitStructure.EXTI_LineCmd = ENABLE;
- EXTI_Init(&EXTI_InitStructure);
-}
-
-void NVICInit(void) 
-{ 
-    NVIC_InitTypeDef NVIC_InitStructure; 
-
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn; 
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0; 
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=2; 
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
-    NVIC_Init(&NVIC_InitStructure); 
-
-}*/
-
