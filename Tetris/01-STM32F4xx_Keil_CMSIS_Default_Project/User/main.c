@@ -23,10 +23,10 @@
 #include "myGraphic.h"
 #include "myInit.h"
 
-
-#define SQUARE_SIZE 20
-#define X_SQUARE_BEGINNING (155-SQUARE_SIZE)
-#define Y_SQUARE_BEGINNING (160-SQUARE_SIZE)
+#define PINLEFT GPIO_PIN_0
+#define PINDOWN GPIO_PIN_2
+#define PINUP GPIO_PIN_4
+#define PINRIGHT GPIO_PIN_6
 
 //void Clock_HSE_Configuration(void);
 //void Clock_HSI_Configuration(void);
@@ -38,146 +38,82 @@
 //void EXTI_Configuration(void);
 
 uint8_t  mode;
-uint8_t up,down,left,right,user;
+uint8_t up,down,left,right;
 
-uint16_t x,y;
-uint8_t i,j,k;
+TileType_t tile;
+
 
 int main(void) {
 	
 	mode = 0;
-	j = 0;
-	k = 0;
-	x=0,y=0;
 
 	/* Initialize system */
-	//SystemInit();
 	my_Clock_PLL_Configuration();
-	my_GPIO_Configuration();
+	Configure_PE0();
+	Configure_PE2();
+	Configure_PE4();
+	
+	//SystemInit();
+//my_Clock_PLL_Configuration();
+//	my_GPIO_Configuration();
 
 	/* Initialize leds & init on board */
 	TM_DISCO_LedInit();
 	TM_DELAY_Init();
 	BoardInit();
-
+	
 	while (1) {
-	
-		/* Toggle leds */
-		TM_DISCO_LedToggle(LED_ALL);
-		ClearBoard();
-	
-		user = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_0); 
-		
-		down = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_2); 
-		up = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_4);
-		left = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_3);
-		right = GPIO_ReadInputDataBit ( GPIOA, GPIO_PIN_5);
-		
-		if(down==0) 
-		{
-			if (y>0)
-			{
-				y-=1;
-				ChangeScore(y);
-				yRefreshScore();
-			}
-			else
-				y = 22;
+		if (mode){
+			DrawNextTile(tile);
+			mode = 0;
+			Delayms(500);
+			ClearNextTilePanel();
 		}
-		if(up==0)
-		{
-			if(y<22)
-			{
-				y+=1;
-				ChangeScore(y);
-				yRefreshScore();
-			}
-			else 
-				y = 0;
-		}
-		if(left==0)
-		{
-			if(x>0)
-			{
-				x-=1;
-				ChangeScore(x);
-				xRefreshScore();
-			}
-			else
-				x = 22;
-		}
-		if(right==0)
-		{
-			if (x<9)
-			{
-				x+=1;
-				ChangeScore(x);
-				xRefreshScore();
-			}
-			else 
-				x = 0;
-		}
-					
-
-		
-		
-		/*Drawing stuff*/
-	/*	switch (mode){
-			case 0:
-				DrawNextTile(TILE_I);
-				mode++;	
-				break;
-			case 1:
-				DrawNextTile(TILE_O);
-				mode++;	
-				break;		
-			case 2:
-				DrawNextTile(TILE_T);
-				mode++;	
-				break;		
-			case 3:
-				DrawNextTile(TILE_S);
-				mode++;
-				break;
-			case 4:
-				DrawNextTile(TILE_Z);
-				mode++;	
-				break;
-			
-			case 5:
-				DrawNextTile(TILE_J);
-				mode++;	
-				break;
-			
-			case 6:
-				DrawNextTile(TILE_L);
-				mode=0;	
-				break;
-		
-		}
-	*/
-	
-			if(left==1)
-				DrawSquareOnTileBoard(8,8,ILI9341_COLOR_ORANGE);
-		else
-				DrawSquareOnTileBoard(8,8,ILI9341_COLOR_GREEN);	
-		
-	DrawSquareOnTileBoard(x,y,ILI9341_COLOR_MAGENTA);
-	DrawSquareOnTileBoard(j,k,ILI9341_COLOR_BLACK);
-	DrawSquareOnTileBoard(9-j,22-k,ILI9341_COLOR_BLUE2);
-	if(j<9){ 
-		j++;
-	}
-	else {
-		j=0;
-		k++;
-	}
-	if (k==22)
-		k = 0; 
-		
-	Delayms(500);
-		
 	}
 }
 
+/* Set interrupt handlers */
+/* Handle PD0 interrupt */
+void EXTI0_IRQHandler(void) {
+	/* Make sure that interrupt flag is set */
+	if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
+		/* Do your stuff when PD0 is changed */
+		tile = TILE_I;
+		mode = 1;		
+		/* Clear interrupt flag */
+		EXTI_ClearITPendingBit(EXTI_Line0);
+	}
+}
 
+void EXTI2_IRQHandler(void) {
+	/* Make sure that interrupt flag is set */
+	if (EXTI_GetITStatus(EXTI_Line2) != RESET) {
+		/* Do your stuff when PD0 is changed */
+		tile = TILE_O;
+		mode = 1;		
+		/* Clear interrupt flag */
+		EXTI_ClearITPendingBit(EXTI_Line2);
+	}
+}
+
+void EXTI4_IRQHandler(void) {
+	/* Make sure that interrupt flag is set */
+	if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
+		/* Do your stuff when PD0 is changed */
+		tile = TILE_T;
+		mode = 1;		
+		/* Clear interrupt flag */
+		EXTI_ClearITPendingBit(EXTI_Line4);
+	}
+}
+
+void EXTI6_IRQHandler(void) {
+	/* Make sure that interrupt flag is set */
+	if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
+		/* Do your stuff when PD0 is changed */
+		tile = TILE_L;
+		mode = 1;		
+		/* Clear interrupt flag */
+		EXTI_ClearITPendingBit(EXTI_Line6);
+	}
+}
