@@ -4,38 +4,38 @@
 
 void my_Clock_PLL_Configuration(){
 	RCC_DeInit();
-	
+
 	RCC_HSEConfig(RCC_HSE_ON);
 	RCC_SYSCLKConfig(RCC_SYSCLKSource_HSE);
-	
+
 	while (RCC_WaitForHSEStartUp() != SUCCESS);
 	while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) != SET);
-	
+
 	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
 	//TODO: verify
 	RCC_PLLConfig(RCC_PLLSource_HSE, 4, 200, 4, 4);
 	RCC_PLLCmd(ENABLE);
-	
+
 	RCC_HCLKConfig(RCC_SYSCLK_Div1);
-	
+
 	RCC_PCLK1Config(RCC_HCLK_Div2);
 	RCC_PCLK2Config(RCC_HCLK_Div1);
-	
+
 	while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != SET);
 }
 
 void Configure_PE0(void){
-	
-/* Set variables used */
+
+	/* Set variables used */
 	GPIO_InitTypeDef GPIO_InitStruct;
 	EXTI_InitTypeDef EXTI_InitStruct;
 	NVIC_InitTypeDef NVIC_InitStruct;
-	
+
 	/* Enable clock for GPIOE */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	/* Enable clock for SYSCFG */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
+
 	/* Set pin as input */
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
@@ -43,10 +43,10 @@ void Configure_PE0(void){
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOE, &GPIO_InitStruct);
-	
+
 	/* Tell system that you will use PD0 for EXTI_Line0 */
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource0);
-	
+
 	/* PD0 is connected to EXTI_Line0 */
 	EXTI_InitStruct.EXTI_Line = EXTI_Line0;
 	/* Enable interrupt */
@@ -77,12 +77,12 @@ void Configure_PE2(void){
 	GPIO_InitTypeDef GPIO_InitStruct;
 	EXTI_InitTypeDef EXTI_InitStruct;
 	NVIC_InitTypeDef NVIC_InitStruct;
-	
+
 	/* Enable clock for GPIOE */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	/* Enable clock for SYSCFG */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
+
 	/* Set pin as input */
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
@@ -90,10 +90,10 @@ void Configure_PE2(void){
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOE, &GPIO_InitStruct);
-	
+
 	/* Tell system that you will use PD0 for EXTI_Line0 */
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource2);
-	
+
 	/* PD0 is connected to EXTI_Line0 */
 	EXTI_InitStruct.EXTI_Line = EXTI_Line2;
 	/* Enable interrupt */
@@ -123,12 +123,12 @@ void Configure_PE4(void){
 	GPIO_InitTypeDef GPIO_InitStruct;
 	EXTI_InitTypeDef EXTI_InitStruct;
 	NVIC_InitTypeDef NVIC_InitStruct;
-	
+
 	/* Enable clock for GPIOE */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	/* Enable clock for SYSCFG */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
+
 	/* Set pin as input */
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_4;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
@@ -136,10 +136,10 @@ void Configure_PE4(void){
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOE, &GPIO_InitStruct);
-	
+
 	/* Tell system that you will use PD0 for EXTI_Line0 */
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource4);
-	
+
 	/* PD0 is connected to EXTI_Line0 */
 	EXTI_InitStruct.EXTI_Line = EXTI_Line4;
 	/* Enable interrupt */
@@ -165,29 +165,29 @@ void Configure_PE4(void){
 
 }
 
-void Configure_PE6(void){
+void Configure_PE1(void){
 	GPIO_InitTypeDef GPIO_InitStruct;
 	EXTI_InitTypeDef EXTI_InitStruct;
 	NVIC_InitTypeDef NVIC_InitStruct;
-	
+
 	/* Enable clock for GPIOE */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	/* Enable clock for SYSCFG */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
+
 	/* Set pin as input */
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_1;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOE, &GPIO_InitStruct);
-	
+
 	/* Tell system that you will use PD0 for EXTI_Line0 */
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource6);
-	
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, 1);
+
 	/* PD0 is connected to EXTI_Line0 */
-	EXTI_InitStruct.EXTI_Line = EXTI_Line6;
+	EXTI_InitStruct.EXTI_Line = EXTI_Line1;
 	/* Enable interrupt */
 	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
 	/* Interrupt mode */
@@ -199,7 +199,7 @@ void Configure_PE6(void){
 
 	/* Add IRQ vector to NVIC */
 	/* PD0 is connected to EXTI_Line0, which has EXTI0_IRQn vector */
-	NVIC_InitStruct.NVIC_IRQChannel = EXTI9_5_IRQn;
+	NVIC_InitStruct.NVIC_IRQChannel = EXTI1_IRQn;
 	/* Set priority */
 	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
 	/* Set sub priority */
@@ -215,13 +215,13 @@ void Configure_PE6(void){
 void Init(void){
 	/* Initialize system */
 	my_Clock_PLL_Configuration();
-	
+
 	/*Configure pins for interrupts*/
 	Configure_PE0();
 	Configure_PE2();
 	Configure_PE4();
-	Configure_PE6();
-	
+	Configure_PE1();
+
 	/*Configure board and LCD*/
 	TM_DISCO_LedInit();
 	TM_DELAY_Init();

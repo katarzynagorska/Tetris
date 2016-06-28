@@ -1,12 +1,12 @@
 /**
- * Katarzyna Gorska
- * MARM 16L
- * Tetris clone
- *
- * Using Keil project template from http://stm32f4-discovery.net/
- *
- */
- 
+* Katarzyna Gorska
+* MARM 16L
+* Tetris clone
+*
+* Using Keil project template from http://stm32f4-discovery.net/
+*
+*/
+
 /* Include core modules */
 #include "stm32f4xx.h"
 /* Include TM libraries */
@@ -19,53 +19,71 @@
 
 uint8_t  mode;
 
-TileType_t tile;
+
 
 uint8_t FlagLeftKey, FlagRightKey, FlagUpKey, FlagDownKey;
 
 int main(void) {
 	Init();
-	
-	FlagLeftKey = 0;
-	mode = 0;
-	game_Shuffle();
+	game_StartGame();
 
-	
+	mode = 1;
 	
 	while (1) {
-		
-		/*Left key pressed*/
-		if (FlagLeftKey){
-			tile = game_nextTiles[mode];
-			DrawNextTile(tile);
-			mode++;
-			if (mode == 7)
-			{
-				game_Shuffle();
-				mode = 0;
+
+		if (y_cor!=0){
+
+			DrawTetrominoOnBoard(x_cor, y_cor, tetromino, tile_GetColor(tile));
+			/*Left key pressed*/
+			if (FlagLeftKey){
+				tetromino_Move(LEFT);
+				FlagLeftKey = 0;
 			}
-			FlagLeftKey = 0;
+
+			/*Right key pressed*/
+			if (FlagRightKey){
+				tetromino_Move(RIGHT);
+				FlagRightKey = 0;
+			}
+
+			/*Up key pressed*/
+			if (FlagUpKey){
+				tetromino_Rotate();
+				FlagUpKey = 0;
+			}
+
+			/*Down key pressed*/
+			if (FlagDownKey){
+				tetromino_Move(DOWN);
+				FlagDownKey = 0;
+
+			}
+		}
+			else {
+				FlagCollision = 0;
+				game_AddTetrominoToBoard();
+				game_refreshBoard();
+				
+				tile = game_nextTiles[mode];
+				tetromino_Init(tile);
+
+				
+				mode++;
+
+				xRefreshScore();
+				yRefreshScore();
+				
+				if (mode < 7)
+					DrawNextTile(game_nextTiles[mode]);
+				
+				if (mode == 7){
+					game_Shuffle();
+					mode = 0;
+					DrawNextTile(game_nextTiles[mode]);
+				
+			}
 		}
 
-		/*Right key pressed*/
-		if (FlagRightKey){
-		
-		FlagRightKey = 0;
-		}
-		
-		/*Up key pressed*/
-		if (FlagUpKey){
-		
-		FlagUpKey = 0;
-		}
-		
-		/*Down key pressed*/
-		if (FlagDownKey){
-		
-		FlagDownKey = 0;
-		}
-		
-		
 	}
 }
 
@@ -75,9 +93,6 @@ int main(void) {
 void EXTI0_IRQHandler(void) {
 	/* Make sure that interrupt flag is set */
 	if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
-		/* Do your stuff when PD0 is changed */
-	//	tile = TILE_I;
-
 		/* Key flag set up*/
 		FlagLeftKey = 1;
 		/* Clear interrupt flag */
@@ -87,13 +102,8 @@ void EXTI0_IRQHandler(void) {
 /* Handle PE2 interrupt */
 /* DOWN */
 void EXTI2_IRQHandler(void) {
-	/* Make sure that interrupt flag is set */
 	if (EXTI_GetITStatus(EXTI_Line2) != RESET) {
-		/* Do your stuff when PD0 is changed */
-
-		/* Key flag set up*/
-		FlagDownKey = 1;		
-		/* Clear interrupt flag */
+		FlagDownKey = 1;
 		EXTI_ClearITPendingBit(EXTI_Line2);
 	}
 }
@@ -101,29 +111,18 @@ void EXTI2_IRQHandler(void) {
 /* Handle PE4 interrupt */
 /* UP */
 void EXTI4_IRQHandler(void) {
-	/* Make sure that interrupt flag is set */
 	if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
-		/* Do your stuff when PD0 is changed */
-		
-		/* Key flag set up*/
 		FlagUpKey = 1;
-		/* Clear interrupt flag */
 		EXTI_ClearITPendingBit(EXTI_Line4);
 	}
 }
 
 
-/* Handle PE6 interrupt */
+/* Handle PE1 interrupt */
 /* RIGHT */
-void EXTI9_5_IRQHandler(void) {
-	/* Make sure that interrupt flag is set */
-	if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
-		/* Do your stuff when PD0 is changed */
-		
-		
-		/* Key flag set up*/
-		FlagDownKey = 1;		
-		/* Clear interrupt flag */
-		EXTI_ClearITPendingBit(EXTI_Line6);
+void EXTI1_IRQHandler(void) {
+	if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
+		FlagRightKey = 1;
+		EXTI_ClearITPendingBit(EXTI_Line1);
 	}
 }
