@@ -109,8 +109,6 @@ void BoardInit(){
 	/**Score panel**/
 	TM_ILI9341_Puts(5, 110, "SCORE", &TM_Font_7x10, ILI9341_COLOR_WHITE, ILI9341_COLOR_BLUE);
 	TM_ILI9341_Puts(5, 125, score, &TM_Font_7x10, ILI9341_COLOR_WHITE, ILI9341_COLOR_BLUE);
-	TM_ILI9341_Puts(5, 140, magenta, &TM_Font_7x10, ILI9341_COLOR_MAGENTA, ILI9341_COLOR_BLUE);
-	TM_ILI9341_Puts(5, 155, black, &TM_Font_7x10, ILI9341_COLOR_BLACK, ILI9341_COLOR_BLUE);
 
 	TM_ILI9341_DrawFilledRectangle(71, 21, 200, 320, ILI9341_COLOR_WHITE);
 }
@@ -199,6 +197,10 @@ void DrawTetrominoOnBoard(uint16_t x, uint16_t y, uint16_t tetromino[4][2], uint
 
 void ChangeScore(uint16_t s){
 	sprintf(score, "%u", s);
+}
+void RefreshScore(){
+	TM_ILI9341_DrawFilledRectangle(5, 125, 70, 135, ILI9341_COLOR_BLUE);
+	TM_ILI9341_Puts(5, 125, score, &TM_Font_7x10, ILI9341_COLOR_WHITE, ILI9341_COLOR_BLUE);
 }
 
 void yRefreshScore(){

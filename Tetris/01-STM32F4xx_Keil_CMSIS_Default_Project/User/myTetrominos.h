@@ -50,7 +50,7 @@ void tetromino_Rotate(){
 		}
 		else if (current_rot == ROTATE_90)
 		{
-		if (x_cor>7)
+			if (x_cor>7)
 				return;
 			//	J_90 = {{0,1}{0,0}{1,0}{2,0}}
 			tetromino[0][0] = 0;
@@ -120,7 +120,7 @@ void tetromino_Rotate(){
 			tetromino[3][1] = 2;
 		}
 		else{
-			/*Preventing rotation when to close to the wall*/			
+			/*Preventing rotation when to close to the wall*/
 			if (x_cor>7)
 				return;
 			//	L_270 = {{0,0}{1,0}{2,0}{2,1}}
@@ -145,6 +145,9 @@ void tetromino_Rotate(){
 	case TILE_S:
 		if ((current_rot == ROTATE_0) || (current_rot == ROTATE_180))
 		{
+			/*Preventing rotation when to close to the wall*/
+			if (x_cor>7)
+				return;
 			// S_ver = {{0,0},{1,0},{1,1},{2,1}}
 			for (i = 0; i < 4; i++){
 				if (i<2)
@@ -161,9 +164,6 @@ void tetromino_Rotate(){
 		}
 		else
 		{
-			/*Preventing rotation when to close to the wall*/			
-			if (x_cor>7)
-				return;
 			//S_hor = {{0,1}{0,2}{1,0}{1,1}}
 			for (i = 0; i < 4; i++){
 				if (i<2)
@@ -182,6 +182,9 @@ void tetromino_Rotate(){
 	case TILE_Z:
 		if ((current_rot == ROTATE_0) || (current_rot == ROTATE_180))
 		{
+			/*Preventing rotation when to close to the wall*/
+			if (x_cor>7)
+				return;
 			//Z_ver = {{0,1}{1,1}{1,0}{2,0}}
 			for (i = 0; i < 4; i++){
 				if (i<2)
@@ -198,9 +201,6 @@ void tetromino_Rotate(){
 		}
 		else
 		{
-			/*Preventing rotation when to close to the wall*/			
-			if (x_cor>7)
-				return;
 			//Z_hor = {{0,0}{0,1}{1,1}{1,2}}
 			for (i = 0; i < 4; i++){
 				if (i<2)
@@ -219,6 +219,9 @@ void tetromino_Rotate(){
 	case TILE_T:
 		if (current_rot == ROTATE_0)
 		{
+			/*Preventing rotation when to close to the wall*/
+			if (x_cor>7)
+				return;
 			//	T_0 = {{0,1}{1,1}{2,1}{1,0}}
 			for (i = 0; i < 3; i++){
 				tetromino[i][0] = i;
@@ -229,7 +232,7 @@ void tetromino_Rotate(){
 		}
 		else if (current_rot == ROTATE_90)
 		{
-			//	T_90 = {{1,0}{1,1}{1,2}{0,1}}
+				//	T_90 = {{1,0}{1,1}{1,2}{0,1}}
 			for (i = 0; i < 3; i++){
 				tetromino[i][0] = 1;
 				tetromino[i][1] = i;
@@ -239,7 +242,10 @@ void tetromino_Rotate(){
 		}
 		else if (current_rot == ROTATE_180)
 		{
-			//	T_180 = {{0,0}{1,1}{2,1}{1,2}}
+			/*Preventing rotation when to close to the wall*/
+			if (x_cor>7)
+				return;
+			//	T_180 = {{0,1}{1,1}{2,1}{1,2}}
 			for (i = 0; i < 3; i++){
 				tetromino[i][0] = i;
 				tetromino[i][1] = 1;
@@ -259,7 +265,7 @@ void tetromino_Rotate(){
 		break;
 
 	}
-/*Changing current rotation*/
+	/*Changing current rotation*/
 	switch (current_rot)
 	{
 	case ROTATE_0:
