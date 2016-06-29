@@ -305,7 +305,7 @@ void tetromino_Init(TileType_t tile){
 		break;
 	case TILE_O:
 		x_cor = 4;
-		y_cor = 19;
+		y_cor = 21;
 		break;
 	case TILE_S:
 		x_cor = 4;
@@ -320,4 +320,31 @@ void tetromino_Init(TileType_t tile){
 		y_cor = 21;
 		break;
 	}
+}
+uint32_t tile_GetColor(TileType_t tile){
+	uint32_t color;
+	switch (tile){
+	case TILE_I:
+		color = ILI9341_COLOR_CYAN;
+		break;
+	case TILE_J:
+		color = ILI9341_COLOR_BLUE;
+		break;
+	case TILE_L:
+		color = ILI9341_COLOR_ORANGE;
+		break;
+	case TILE_O:
+		color = ILI9341_COLOR_YELLOW;
+		break;
+	case TILE_S:
+		color = ILI9341_COLOR_GREEN;
+		break;
+	case TILE_Z:
+		color = ILI9341_COLOR_RED;
+		break;
+	case TILE_T:
+		color = ILI9341_COLOR_MAGENTA;
+		break;
+	}
+	return color;
 }
