@@ -110,6 +110,7 @@ void BoardInit(){
 	TM_ILI9341_Puts(5, 110, "SCORE", &TM_Font_7x10, ILI9341_COLOR_WHITE, ILI9341_COLOR_BLUE);
 	TM_ILI9341_Puts(5, 125, score, &TM_Font_7x10, ILI9341_COLOR_WHITE, ILI9341_COLOR_BLUE);
 
+	/* Board panel */
 	TM_ILI9341_DrawFilledRectangle(71, 21, 200, 320, ILI9341_COLOR_WHITE);
 }
 
@@ -199,7 +200,7 @@ void DispGameOver(){
 	TM_ILI9341_DrawFilledRectangle(0, 0, 240, 320, ILI9341_COLOR_BLACK);
 	TM_ILI9341_DrawFilledRectangle(0, 140, 240, 180, ILI9341_COLOR_MAGENTA);
 	TM_ILI9341_Puts(35, 148, "GAME OVER", &TM_Font_16x26, ILI9341_COLOR_BLACK, ILI9341_COLOR_MAGENTA);
-	TM_ILI9341_Puts(50, 170, "press up to continue...", &TM_Font_7x10, ILI9341_COLOR_BLACK, ILI9341_COLOR_MAGENTA);
+	TM_ILI9341_Puts(50, 170, "reset for a new game...", &TM_Font_7x10, ILI9341_COLOR_BLACK, ILI9341_COLOR_MAGENTA);
 }
 
 void ChangeScore(uint16_t s){

@@ -6,9 +6,16 @@ TileType_t tile;
 uint16_t x_cor, y_cor;
 /*Current rotation*/
 Rotate_t current_rot;
+/* Buffer for tetrominos, that have already fallen down */
+uint16_t game_board[10][22];
 
+/**
+* @brief  Rotating tetromino if possible
+* @retval None
+*/
 void tetromino_Rotate(){
-	unsigned char i;
+	unsigned char i, j;
+	uint16_t tmp[4][2];
 	/*Erasing old tetromino position*/
 	DrawTetrominoOnBoard(x_cor, y_cor, tetromino, ILI9341_COLOR_WHITE);
 
@@ -19,8 +26,8 @@ void tetromino_Rotate(){
 		{
 			//	I_hor = [{0,1},{1,1},{2,1},{3,1}];	
 			for (i = 0; i < 4; i++){
-				tetromino[i][0] = 0;
-				tetromino[i][1] = i;
+				tmp[i][0] = 0;
+				tmp[i][1] = i;
 			}
 		}
 		else
@@ -30,22 +37,22 @@ void tetromino_Rotate(){
 				return;
 			//	I_hor = [{1,0},{1,1},{1,2},{1,3}];
 			for (i = 0; i < 4; i++){
-				tetromino[i][0] = i;
-				tetromino[i][1] = 0;
+				tmp[i][0] = i;
+				tmp[i][1] = 0;
 			}
 		}
-		break;
 
+		break;
 	case TILE_J:
 		if (current_rot == ROTATE_0)
 		{
 			//	J_0 = {{0,0}{1,0}{1,1}{1,2}}
-			tetromino[0][0] = 0;
-			tetromino[0][1] = 0;
+			tmp[0][0] = 0;
+			tmp[0][1] = 0;
 
 			for (i = 1; i < 4; i++){
-				tetromino[i][0] = 1;
-				tetromino[i][1] = i - 1;
+				tmp[i][0] = 1;
+				tmp[i][1] = i - 1;
 			}
 		}
 		else if (current_rot == ROTATE_90)
@@ -53,23 +60,23 @@ void tetromino_Rotate(){
 			if (x_cor>7)
 				return;
 			//	J_90 = {{0,1}{0,0}{1,0}{2,0}}
-			tetromino[0][0] = 0;
-			tetromino[0][1] = 1;
+			tmp[0][0] = 0;
+			tmp[0][1] = 1;
 
 			for (i = 1; i < 4; i++){
-				tetromino[i][0] = i - 1;
-				tetromino[i][1] = 0;
+				tmp[i][0] = i - 1;
+				tmp[i][1] = 0;
 			}
 		}
 		else if (current_rot == ROTATE_180)
 		{
 			//	J_180 = {{0,0}{0,1}{0,2}{1,2}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = 0;
-				tetromino[i][1] = i;
+				tmp[i][0] = 0;
+				tmp[i][1] = i;
 			}
-			tetromino[3][0] = 1;
-			tetromino[3][1] = 2;
+			tmp[3][0] = 1;
+			tmp[3][1] = 2;
 		}
 		else{
 			/*Preventing rotation when to close to the wall*/
@@ -77,11 +84,11 @@ void tetromino_Rotate(){
 				return;
 			//	J_270 = {{0,1}{1,1}{2,1}{2,0}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = i;
-				tetromino[i][1] = 1;
+				tmp[i][0] = i;
+				tmp[i][1] = 1;
 			}
-			tetromino[3][0] = 2;
-			tetromino[3][1] = 0;
+			tmp[3][0] = 2;
+			tmp[3][1] = 0;
 		}
 		break;
 
@@ -90,11 +97,11 @@ void tetromino_Rotate(){
 		{
 			//	L_0 = {{0,0}{0,1}{0,2}{1,0}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = 0;
-				tetromino[i][1] = i;
+				tmp[i][0] = 0;
+				tmp[i][1] = i;
 			}
-			tetromino[3][0] = 1;
-			tetromino[3][1] = 0;
+			tmp[3][0] = 1;
+			tmp[3][1] = 0;
 		}
 		else if (current_rot == ROTATE_90)
 		{
@@ -103,21 +110,21 @@ void tetromino_Rotate(){
 				return;
 			//	L_90 = {{0,1}{1,1}{1,2}{0,0}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = i;
-				tetromino[i][1] = 1;
+				tmp[i][0] = i;
+				tmp[i][1] = 1;
 			}
-			tetromino[3][0] = 0;
-			tetromino[3][1] = 0;
+			tmp[3][0] = 0;
+			tmp[3][1] = 0;
 		}
 		else if (current_rot == ROTATE_180)
 		{
 			//	L_180 = {{0,0}{0,1}{0,2}{1,2}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = 1;
-				tetromino[i][1] = i;
+				tmp[i][0] = 1;
+				tmp[i][1] = i;
 			}
-			tetromino[3][0] = 0;
-			tetromino[3][1] = 2;
+			tmp[3][0] = 0;
+			tmp[3][1] = 2;
 		}
 		else{
 			/*Preventing rotation when to close to the wall*/
@@ -125,21 +132,21 @@ void tetromino_Rotate(){
 				return;
 			//	L_270 = {{0,0}{1,0}{2,0}{2,1}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = i;
-				tetromino[i][1] = 0;
+				tmp[i][0] = i;
+				tmp[i][1] = 0;
 			}
-			tetromino[3][0] = 2;
-			tetromino[3][1] = 1;
+			tmp[3][0] = 2;
+			tmp[3][1] = 1;
 		}
 		break;
 	case TILE_O:
 		// O = {{0,0},{0,1},{1,0},{1,1}}
 		for (i = 0; i < 2; i++){
-			tetromino[i][0] = 0;
-			tetromino[i + 2][0] = 1;
+			tmp[i][0] = 0;
+			tmp[i + 2][0] = 1;
 		}
 		for (i = 0; i < 4; i++)
-			tetromino[i][1] = i % 2;
+			tmp[i][1] = i % 2;
 		break;
 
 	case TILE_S:
@@ -152,13 +159,13 @@ void tetromino_Rotate(){
 			for (i = 0; i < 4; i++){
 				if (i<2)
 				{
-					tetromino[i][0] = i;
-					tetromino[i][1] = 0;
+					tmp[i][0] = i;
+					tmp[i][1] = 0;
 				}
 				else
 				{
-					tetromino[i][0] = i - 1;
-					tetromino[i][1] = 1;
+					tmp[i][0] = i - 1;
+					tmp[i][1] = 1;
 				}
 			}
 		}
@@ -168,13 +175,13 @@ void tetromino_Rotate(){
 			for (i = 0; i < 4; i++){
 				if (i<2)
 				{
-					tetromino[i][0] = 0;
-					tetromino[i][1] = i + 1;
+					tmp[i][0] = 0;
+					tmp[i][1] = i + 1;
 				}
 				else
 				{
-					tetromino[i][0] = 1;
-					tetromino[i][1] = i - 2;
+					tmp[i][0] = 1;
+					tmp[i][1] = i - 2;
 				}
 			}
 		}
@@ -189,13 +196,13 @@ void tetromino_Rotate(){
 			for (i = 0; i < 4; i++){
 				if (i<2)
 				{
-					tetromino[i][0] = i;
-					tetromino[i][1] = 1;
+					tmp[i][0] = i;
+					tmp[i][1] = 1;
 				}
 				else
 				{
-					tetromino[i][0] = i - 1;
-					tetromino[i][1] = 0;
+					tmp[i][0] = i - 1;
+					tmp[i][1] = 0;
 				}
 			}
 		}
@@ -205,13 +212,13 @@ void tetromino_Rotate(){
 			for (i = 0; i < 4; i++){
 				if (i<2)
 				{
-					tetromino[i][0] = 0;
-					tetromino[i][1] = i;
+					tmp[i][0] = 0;
+					tmp[i][1] = i;
 				}
 				else
 				{
-					tetromino[i][0] = 1;
-					tetromino[i][1] = i - 1;
+					tmp[i][0] = 1;
+					tmp[i][1] = i - 1;
 				}
 			}
 		}
@@ -224,21 +231,21 @@ void tetromino_Rotate(){
 				return;
 			//	T_0 = {{0,1}{1,1}{2,1}{1,0}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = i;
-				tetromino[i][1] = 1;
+				tmp[i][0] = i;
+				tmp[i][1] = 1;
 			}
-			tetromino[3][0] = 1;
-			tetromino[3][1] = 0;
+			tmp[3][0] = 1;
+			tmp[3][1] = 0;
 		}
 		else if (current_rot == ROTATE_90)
 		{
-				//	T_90 = {{1,0}{1,1}{1,2}{0,1}}
+			//	T_90 = {{1,0}{1,1}{1,2}{0,1}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = 1;
-				tetromino[i][1] = i;
+				tmp[i][0] = 1;
+				tmp[i][1] = i;
 			}
-			tetromino[3][0] = 0;
-			tetromino[3][1] = 1;
+			tmp[3][0] = 0;
+			tmp[3][1] = 1;
 		}
 		else if (current_rot == ROTATE_180)
 		{
@@ -247,24 +254,37 @@ void tetromino_Rotate(){
 				return;
 			//	T_180 = {{0,1}{1,1}{2,1}{1,2}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = i;
-				tetromino[i][1] = 1;
+				tmp[i][0] = i;
+				tmp[i][1] = 1;
 			}
-			tetromino[3][0] = 1;
-			tetromino[3][1] = 2;
+			tmp[3][0] = 1;
+			tmp[3][1] = 2;
 		}
 		else{
 			//	T_270 = {{0,0}{0,1}{0,2}{1,1}}
 			for (i = 0; i < 3; i++){
-				tetromino[i][0] = 0;
-				tetromino[i][1] = i;
+				tmp[i][0] = 0;
+				tmp[i][1] = i;
 			}
-			tetromino[3][0] = 1;
-			tetromino[3][1] = 1;
+			tmp[3][0] = 1;
+			tmp[3][1] = 1;
 		}
 		break;
 
 	}
+	/* Checking for collision with other tetrominoes on board */
+	for (i = 0; i<4; i++){
+		if (game_board[tmp[i][0] + x_cor][tmp[i][1] + y_cor] == 1)
+			return;
+	}
+
+	/* Saving new tetromino */
+	for (i = 0; i<4; i++){
+		for (j = 0; j<2; j++){
+		tetromino[i][j] = tmp[i][j];
+		}
+	}
+
 	/*Changing current rotation*/
 	switch (current_rot)
 	{
@@ -284,11 +304,12 @@ void tetromino_Rotate(){
 }
 
 
-
+/**
+* @brief  Initialization of new tetromino
+* @retval None
+*/
 void tetromino_Init(TileType_t tile){
-	/*New tetromino has 0 rotation*/
-	current_rot = ROTATE_0;
-	tetromino_Rotate();
+
 	/*Setting up drop origin coordinates*/
 	switch (tile){
 	case TILE_I:
@@ -320,7 +341,15 @@ void tetromino_Init(TileType_t tile){
 		y_cor = 21;
 		break;
 	}
+	/*New tetromino has 0 rotation*/
+	current_rot = ROTATE_0;
+	tetromino_Rotate();
 }
+/**
+* @brief  Getter for tile color
+* @param 	tile: tile to check color
+* @retval color: tile color
+*/
 uint32_t tile_GetColor(TileType_t tile){
 	uint32_t color;
 	switch (tile){

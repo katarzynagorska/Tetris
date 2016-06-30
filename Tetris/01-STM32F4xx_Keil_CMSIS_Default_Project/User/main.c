@@ -86,7 +86,7 @@ void SysTick_Handler()
 
 	if (++count == 1000) {
 		FlagTimeDown = 1;
-		count = 0;
+		count = level*100;
 	}
 }
 
